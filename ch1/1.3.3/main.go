@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"regexp"
 	"sort"
+	"time"
 	"unsafe"
 )
 
@@ -127,6 +128,21 @@ func main() {
 	//a[len(a)-1] = nil //垃圾回收器回收最后一个元素内存
 	//a = a[:len(a)-1]/
 
+	var unsort = []float64{4, 2, 5, 7, 1, 3, 10, 9}
+	for i := 0; i < 15; i++ {
+		unsort = append(unsort, unsort...)
+	}
+
+	start := time.Now().Nanosecond()
+	SortFloat64(unsort)
+	end := time.Now().Nanosecond()
+	fmt.Println("SortFloat64 =", end-start)
+
+	start = time.Now().Nanosecond()
+	SortFloat63FastV2(unsort)
+	end = time.Now().Nanosecond()
+	fmt.Println("SortFloat63FastV2 =", end-start)
+
 }
 
 //避免内存渗漏
@@ -141,6 +157,7 @@ func FindPhoneNumberB(filename string) []byte {
 	//将感兴趣的数组复制到一个新的切片，切断原始数据的依赖
 	return append([]byte{}, b...)
 }
+
 func SortFloat64(a []float64) {
 	var b []int = ((*[1 << 20]int)(unsafe.Pointer(&a[0])))[:len(a):cap(a)]
 	sort.Ints(b)
